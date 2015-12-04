@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <Button
+        android:id="@+id/test"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="测试"
+        />
+
+    <sausure.youtubeplayeffectsample.YouTubePlayEffect
+        android:id="@+id/youtube_effect"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+
+        <SurfaceView
+            android:id="@+id/player"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+
+        <FrameLayout
+            android:id="@+id/desc"
+            android:background="#ffffff"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="OOP的精髓是把功能或问题模块化，每个模块处理自己的家务事。但在现实世界中，并不是所有问题都能完美得划分到模块中。举个最简单而又常见的例子：现在想为每个模块加上日志功能，要求模块运行时候能输出日志。在不知道AOP的情况下，一般的处理都是：先设计一个日志输出模块，这个模块提供日志输出API，比如Android中的Log类。然后，其他模块需要输出日志的时候调用Log类的几个函数，比如e(TAG,...)，w(TAG,...)，d(TAG,...)，i(TAG,...)等。
+在没有接触AOP之前，包括我在内，想到的解决方案就是上面这样的。但是，从OOP角度看，除了日志模块本身，其他模块的家务事绝大部分情况下应该都不会包含日志输出功能。什么意思？以ActivityManagerService为例，你能说它的家务事里包含日志输出吗？显然，ActivityManagerService的功能点中不包含输出日志这一项。但实际上，软件中的众多模块确实又需要打印日志。这个日志输出功能，从整体来看，都是一个面上的。而这个面的范围，就不局限在单个模块里了，而是横跨多个模块。
+l 在没有AOP之前，各个模块要打印日志，就是自己处理。反正日志模块的那几个API都已经写好了，你在其他模块的任何地方，任何时候都可以调用。功能是得到了满足，但是好像没有Oriented的感觉了。是的，随意加日志输出功能，使得其他模块的代码和日志模块耦合非常紧密。而且，将来要是日志模块修改了API，则使用它们的地方都得改。这种搞法，一点也不酷。"/>
+        </FrameLayout>
+    </sausure.youtubeplayeffectsample.YouTubePlayEffect>
+</FrameLayout>
