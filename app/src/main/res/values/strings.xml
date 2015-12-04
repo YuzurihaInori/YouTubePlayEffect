@@ -1,3 +1,24 @@
 <resources>
     <string name="app_name">YouTubePlayEffectSample</string>
+
+    <array name="test_list">
+        <item>test</item>
+        <item>test</item>
+        <item>test</item>
+        <item>test</item>
+        <item>test</item>
+        <item>test</item>
+        <item>test</item>
+        <item>test</item>
+        <item>test</item>
+        <item>test</item>
+        <item>test</item>
+        <item>test</item>
+        <item>test</item>
+        <item>test</item>
+        <item>test</item>
+        <item>test</item>
+        <item>test</item>
+        <item>test</item>
+    </array>
 </resources>
