@@ -2,6 +2,7 @@ package sausure.youtubeplayeffectsample;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.support.v4.view.MotionEventCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
@@ -15,13 +16,13 @@ import java.lang.ref.WeakReference;
  * Created by JOJO on 2015/11/29.
  */
 public class YouTubePlayEffect extends ViewGroup {
-    public static final int NONE = 0;
-    public static final int HORIZONTAL = 1;
-    public static final int VERTICAL = 2;
+    public static final int NONE = 1 << 0;
+    public static final int HORIZONTAL = 1 << 1;
+    public static final int VERTICAL = 1 << 2;
 
-    public static final int SLIDE_RESTORE_ORIGINAL = 0;
-    public static final int SLIDE_TO_LEFT = 1;
-    public static final int SLIDE_TO_RIGHT = 2;
+    public static final int SLIDE_RESTORE_ORIGINAL = 1 << 0;
+    public static final int SLIDE_TO_LEFT = 1 << 1;
+    public static final int SLIDE_TO_RIGHT = 1 << 2;
 
     private static final float MIN_ALPHA = 0.1f;
 
@@ -93,7 +94,7 @@ public class YouTubePlayEffect extends ViewGroup {
         boolean isHit = mDragHelper.isViewUnder(mPlayer,(int)event.getX(),(int)event.getY());
 
         if(isHit) {
-            switch (event.getAction()){
+            switch (MotionEventCompat.getActionMasked(event)){
                 case MotionEvent.ACTION_DOWN: {
                     mLastX = (int) event.getX();
                     mLastY = (int) event.getY();

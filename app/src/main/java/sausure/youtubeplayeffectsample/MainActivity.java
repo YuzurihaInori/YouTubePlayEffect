@@ -82,6 +82,7 @@ public class MainActivity extends AppCompatActivity implements YouTubePlayEffect
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
+        finish();
 //        Log.i("debug", "surface-destroyed");
     }
 
