@@ -9,13 +9,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity implements YouTubePlayEffect.Callback,SurfaceHolder.Callback{
 
+public class MainActivity extends AppCompatActivity implements YouTubePlayEffect.Callback,
+        SurfaceHolder.Callback,View.OnClickListener,MediaPlayer.OnPreparedListener
+{
     private SurfaceView mPlayer;
     private MediaPlayer mediaPlayer;
     private SurfaceHolder holder;
     private YouTubePlayEffect mEffectPlayer;
-    private Button test;
+    private Button testButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,34 +25,18 @@ public class MainActivity extends AppCompatActivity implements YouTubePlayEffect
         setContentView(R.layout.activity_main);
 
         mPlayer = (SurfaceView) findViewById(R.id.player);
-        mEffectPlayer = (YouTubePlayEffect) findViewById(R.id.youtube_effect);
-        test = (Button) findViewById(R.id.test);
-
-        test.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                playVideo();
-            }
-        });
-
-        mEffectPlayer.setCallback(this);
-
         holder = mPlayer.getHolder();
         holder.addCallback(this);
         holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
         mediaPlayer = MediaPlayer.create(this,R.raw.welcome_video);
-        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-                mp.setLooping(true);
-            }
-        });
-    }
+        mediaPlayer.setOnPreparedListener(this);
 
-//    public void test(View v){
-//
-//        playVideo();
-//    }
+        mEffectPlayer = (YouTubePlayEffect) findViewById(R.id.youtube_effect);
+        mEffectPlayer.setCallback(this);
+
+        testButton = (Button) findViewById(R.id.test);
+        testButton.setOnClickListener(this);
+    }
 
     private void playVideo(){
         mEffectPlayer.show();
@@ -69,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements YouTubePlayEffect
     @Override
     public void onDisappear(int direct) {
         mediaPlayer.pause();
+        testButton.setVisibility(View.VISIBLE);
         Toast.makeText(this,"destroy-direct-"+(direct == YouTubePlayEffect.SLIDE_TO_LEFT ?
                 "left" : "right"),Toast.LENGTH_SHORT).show();
     }
@@ -95,5 +82,16 @@ public class MainActivity extends AppCompatActivity implements YouTubePlayEffect
             mediaPlayer.stop();
         }
         mediaPlayer.release();
+    }
+
+    @Override
+    public void onClick(View v) {
+        playVideo();
+        testButton.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onPrepared(MediaPlayer mp) {
+        mediaPlayer.setLooping(true);
     }
 }

@@ -104,11 +104,14 @@ public class YouTubePlayEffect extends ViewGroup {
                     if(mDragDirect == NONE){
                         int dx = Math.abs(mLastX - (int)event.getX());
                         int dy = Math.abs(mLastY - (int)event.getY());
+                        int slop = mDragHelper.getTouchSlop();
 
-                        if(dy >= dx)
-                            mDragDirect = VERTICAL;
-                        else
-                            mDragDirect = HORIZONTAL;
+                        if(Math.sqrt(dx * dx + dy * dy) >= slop) {
+                            if (dy >= dx)
+                                mDragDirect = VERTICAL;
+                            else
+                                mDragDirect = HORIZONTAL;
+                        }
                     }
                     break;
 
@@ -203,7 +206,7 @@ public class YouTubePlayEffect extends ViewGroup {
 
                     mDisappearDirect = SLIDE_RESTORE_ORIGINAL;
                     restorePosition();
-                    requestLayout();
+                    requestLayoutLightly();
                 }
 
                 mDragDirect = NONE;
@@ -279,7 +282,7 @@ public class YouTubePlayEffect extends ViewGroup {
 //                mPlayer.setAlpha(alpha);
             }
 
-            requestLayout();
+            requestLayoutLightly();
         }
 
         @Override
@@ -321,7 +324,6 @@ public class YouTubePlayEffect extends ViewGroup {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-//        measureChildren(widthMeasureSpec, heightMeasureSpec);
         customMeasure(widthMeasureSpec, heightMeasureSpec);
 
         int maxWidth = MeasureSpec.getSize(widthMeasureSpec);
@@ -344,7 +346,7 @@ public class YouTubePlayEffect extends ViewGroup {
     }
 
     private void customMeasure(int widthMeasureSpec, int heightMeasureSpec){
-        measurePlayer(widthMeasureSpec,heightMeasureSpec);
+        measurePlayer(widthMeasureSpec, heightMeasureSpec);
         measureDesc(widthMeasureSpec, heightMeasureSpec);
     }
 
@@ -358,6 +360,14 @@ public class YouTubePlayEffect extends ViewGroup {
             mPlayerMaxWidth = MeasureSpec.getSize(measureWidth);
         }
 
+        justMeasurePlayer();
+    }
+
+    private void measureDesc(int widthMeasureSpec, int heightMeasureSpec){
+        measureChild(mDesc, widthMeasureSpec, heightMeasureSpec);
+    }
+
+    private void justMeasurePlayer(){
         int widthCurSize =(int)(mPlayerMaxWidth * (1 - mVerticalOffset * PLAYER_RATIO));
         int childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(widthCurSize, MeasureSpec.EXACTLY);
 
@@ -367,20 +377,26 @@ public class YouTubePlayEffect extends ViewGroup {
         mPlayer.measure(childWidthMeasureSpec, childHeightMeasureSpec);
     }
 
-    private void measureDesc(int widthMeasureSpec, int heightMeasureSpec){
-        measureChild(mDesc,widthMeasureSpec,heightMeasureSpec);
-    }
-
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        onLayoutLightly();
+    }
+
+    private void onLayoutLightly(){
         if(mDragDirect != HORIZONTAL) {
             mLeft = this.getWidth() - this.getPaddingRight() - this.getPaddingLeft()
                     - mPlayer.getMeasuredWidth();
 
-            mDesc.layout(mLeft, mTop + mPlayer.getMeasuredHeight(), mLeft + mDesc.getMeasuredWidth(), mTop + b);
+            mDesc.layout(mLeft, mTop + mPlayer.getMeasuredHeight(),
+                    mLeft + mDesc.getMeasuredWidth(), mTop + mDesc.getMeasuredHeight());
         }
-//        Log.i("debug","mLeft="+mLeft);
-        mPlayer.layout(mLeft,mTop,mLeft + mPlayer.getMeasuredWidth(),mTop + mPlayer.getMeasuredHeight());
+
+        mPlayer.layout(mLeft, mTop, mLeft + mPlayer.getMeasuredWidth(), mTop + mPlayer.getMeasuredHeight());
+    }
+
+    private void requestLayoutLightly(){
+        justMeasurePlayer();
+        onLayoutLightly();
     }
 
     public void setCallback(Callback callback){
