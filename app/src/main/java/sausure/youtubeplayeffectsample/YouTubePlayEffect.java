@@ -368,7 +368,7 @@ public class YouTubePlayEffect extends ViewGroup {
     }
 
     private void justMeasurePlayer(){
-        int widthCurSize =(int)(mPlayerMaxWidth * (1 - mVerticalOffset * PLAYER_RATIO));
+        int widthCurSize =(int)(mPlayerMaxWidth * (1f - mVerticalOffset * (1f - PLAYER_RATIO)));
         int childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(widthCurSize, MeasureSpec.EXACTLY);
 
         int heightSize =(int)(MeasureSpec.getSize(childWidthMeasureSpec) / VIDEO_RATIO);
