@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Color;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v4.view.ViewCompat;
-import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -32,7 +31,7 @@ public class YouTubePlayEffect extends ViewGroup {
     private static final float LEFT_DRAG_DISAPPEAR_OFFSET = (4f - PLAYER_RATIO) / (4f + 4f * PLAYER_RATIO);
     private static final float RIGHT_DRAG_DISAPPEAR_OFFSET = (4f + PLAYER_RATIO) / (4f + 4f * PLAYER_RATIO);
 
-    private ViewDragHelper mDragHelper;
+    private CustomViewDragHelper mDragHelper;
     private View mPlayer;
     private View mDesc;
     private boolean mIsFinishInit = false;
@@ -66,7 +65,7 @@ public class YouTubePlayEffect extends ViewGroup {
     }
 
     private void init(){
-        mDragHelper = ViewDragHelper.create(this,1f,new MyHelperCallback());
+        mDragHelper = CustomViewDragHelper.create(this, 1f, new MyHelperCallback());
         setBackgroundColor(Color.TRANSPARENT);
     }
 
@@ -191,7 +190,7 @@ public class YouTubePlayEffect extends ViewGroup {
         return false;
     }
 
-    private class MyHelperCallback extends ViewDragHelper.Callback{
+    private class MyHelperCallback extends CustomViewDragHelper.Callback{
         @Override
         public boolean tryCaptureView(View child, int pointerId) {
             return child == mPlayer;
@@ -199,7 +198,7 @@ public class YouTubePlayEffect extends ViewGroup {
 
         @Override
         public void onViewDragStateChanged(int state) {
-            if(state == ViewDragHelper.STATE_IDLE){
+            if(state == CustomViewDragHelper.STATE_IDLE){
 
                 if(mIsMinimum && mDragDirect == HORIZONTAL && mDisappearDirect != SLIDE_RESTORE_ORIGINAL){
                     if(mCallback != null && mCallback.get() != null)
@@ -398,6 +397,7 @@ public class YouTubePlayEffect extends ViewGroup {
     private void requestLayoutLightly(){
         justMeasurePlayer();
         onLayoutLightly();
+        ViewCompat.postInvalidateOnAnimation(this);
     }
 
     public void setCallback(Callback callback){
