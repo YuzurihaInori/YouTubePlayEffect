@@ -15,40 +15,130 @@ import java.lang.ref.WeakReference;
  * Created by JOJO on 2015/11/29.
  */
 public class YouTubePlayEffect extends ViewGroup {
+    /**
+     * 当前拖动的方向
+     */
     public static final int NONE = 1 << 0;
     public static final int HORIZONTAL = 1 << 1;
     public static final int VERTICAL = 1 << 2;
 
+    /**
+     * 最终组件滑向的方向
+     */
     public static final int SLIDE_RESTORE_ORIGINAL = 1 << 0;
     public static final int SLIDE_TO_LEFT = 1 << 1;
     public static final int SLIDE_TO_RIGHT = 1 << 2;
 
+    /**
+     * 播放器最低透明度，可惜SurfaceView不支持设置透明度的样子
+     */
     private static final float MIN_ALPHA = 0.1f;
 
+    /**
+     * 播放器最终缩小的比例
+     */
     private static final float PLAYER_RATIO = 0.5f;
+
+    /**
+     * 视频的长宽比
+     */
     private static final float VIDEO_RATIO = 16f / 9f;
+
+    /**
+     * 当播放器最小化后，其在水平方向的偏移量常量
+     */
     private static final float ORIGINAL_MIN_OFFSET = 1f / (1f + PLAYER_RATIO);
     private static final float LEFT_DRAG_DISAPPEAR_OFFSET = (4f - PLAYER_RATIO) / (4f + 4f * PLAYER_RATIO);
     private static final float RIGHT_DRAG_DISAPPEAR_OFFSET = (4f + PLAYER_RATIO) / (4f + 4f * PLAYER_RATIO);
 
+    /**
+     * 这里我用了自己的CustomViewDragHelper类，其基本从ViewDragHelper复制过来，只是做了一些处理，换成ViewDragHelper
+     * 也可以，只是性能有点影响
+     */
     private CustomViewDragHelper mDragHelper;
+
+    /**
+     * 本ViewGroup只能包含2个直接子组件
+     */
     private View mPlayer;
     private View mDesc;
+
+    /**
+     * 第一次调用onMeasure时调用
+     */
     private boolean mIsFinishInit = false;
+
+    /**
+     * 是否最小化
+     */
     private boolean mIsMinimum = true;
+
+    /**
+     * 垂直方向的拖动范围
+     */
     private int mVerticalRange;
+
+    /**
+     * 水平方向的拖动范围
+     */
     private int mHorizontalRange;
+
+    /**
+     * 即this.getPaddingTop()
+     */
     private int mMinTop;
+
+    /**
+     * 播放器的top
+     */
     private int mTop;
+
+    /**
+     * 播放器的left
+     */
     private int mLeft;
+
+    /**
+     * 播放器的最大宽度，避免重复计算
+     */
     private int mPlayerMaxWidth;
+
+    /**
+     * 播放器最小宽度，避免重复计算
+     */
     private int mPlayerMinWidth;
+
+    /**
+     * 当前拖动的方向
+     */
     private int mDragDirect = NONE;
+
+    /**
+     * 垂直拖动时的偏移量
+     * (mTop - mMinTop) / mVerticalRange
+     */
     private float mVerticalOffset = 1f;
+
+    /**
+     * 水平拖动的偏移量
+     * (mLeft + mPlayerMinWidth) / mHorizontalRange)
+     */
     private float mHorizontalOffset = ORIGINAL_MIN_OFFSET;
+
+    /**
+     * 弱引用，绑定回调
+     */
     private WeakReference<Callback> mCallback;
-    private int mLastX;
-    private int mLastY;
+
+    /**
+     * 触发ACTION_DOWN时的坐标
+     */
+    private int mDownX;
+    private int mDownY;
+
+    /**
+     * 最终播放器消失的方向
+     */
     private int mDisappearDirect = SLIDE_RESTORE_ORIGINAL;
 
     public YouTubePlayEffect(Context context) {
@@ -95,15 +185,15 @@ public class YouTubePlayEffect extends ViewGroup {
         if(isHit) {
             switch (MotionEventCompat.getActionMasked(event)){
                 case MotionEvent.ACTION_DOWN: {
-                    mLastX = (int) event.getX();
-                    mLastY = (int) event.getY();
+                    mDownX = (int) event.getX();
+                    mDownY = (int) event.getY();
                 }
                     break;
 
                 case MotionEvent.ACTION_MOVE:
                     if(mDragDirect == NONE){
-                        int dx = Math.abs(mLastX - (int)event.getX());
-                        int dy = Math.abs(mLastY - (int)event.getY());
+                        int dx = Math.abs(mDownX - (int)event.getX());
+                        int dy = Math.abs(mDownY - (int)event.getY());
                         int slop = mDragHelper.getTouchSlop();
 
                         if(Math.sqrt(dx * dx + dy * dy) >= slop) {
@@ -117,8 +207,8 @@ public class YouTubePlayEffect extends ViewGroup {
 
                 case MotionEvent.ACTION_UP:{
                     if(mDragDirect == NONE) {
-                        int dx = Math.abs(mLastX - (int) event.getX());
-                        int dy = Math.abs(mLastY - (int) event.getY());
+                        int dx = Math.abs(mDownX - (int) event.getX());
+                        int dy = Math.abs(mDownY - (int) event.getY());
                         int slop = mDragHelper.getTouchSlop();
 
                         if (Math.sqrt(dx * dx + dy * dy) < slop){
@@ -274,7 +364,6 @@ public class YouTubePlayEffect extends ViewGroup {
                 mLeft = left;
                 mHorizontalOffset = Math.abs((float)(mLeft + mPlayerMinWidth) / mHorizontalRange);
 
-//            Log.i("debug","mHorizontalOffset="+mHorizontalOffset+",mLeft="+mLeft+",mHorizontalRange="+mHorizontalRange);
             //SurfaceView设置alpha会直接消失，郁闷
 //                float alpha = Math.min(
 //                        Math.max(1 - Math.abs(mHorizontalOffset - ORIGINAL_MIN_OFFSET),MIN_ALPHA)
